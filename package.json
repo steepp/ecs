@@ -1,0 +1,43 @@
+{
+        "name": "game",
+        "private": true,
+        "version": "1.0.0",
+        "description": "",
+        "main": "main.js",
+        "scripts": {
+                "debug": "NODE_INSPECT_RESUME_ON_START=1 node inspect src/server/server.js",
+                "test": "mocha",
+                "dev": "node src/server/server.js",
+                "prettier": "npx prettier -c $INIT_CWD/**/*.js",
+                "lint": "npx eslint src"
+        },
+        "keywords": [
+                "prettier"
+        ],
+        "prettier": {
+                "tabWidth": 8
+        },
+        "author": "",
+        "license": "ISC",
+        "dependencies": {
+                "@timohausmann/quadtree-js": "^1.2.6",
+                "circular-buffer": "^1.0.3",
+                "esm": "^3.2.25",
+                "express": "^4.17.1",
+                "nanoid": "^3.1.22",
+                "socket.io": "^3.1.2"
+        },
+        "devDependencies": {
+                "@eslint/js": "^9.7.0",
+                "chai": "^5.1.0",
+                "eslint": "^9.7.0",
+                "eslint-formatter-mo": "^2.3.0",
+                "eslint-formatter-summary-chart": "^0.3.0",
+                "globals": "^15.8.0",
+                "mocha": "^9.1.3",
+                "nodemon": "^3.1.9",
+                "prettier": "3.3.3",
+                "ts-node": "^10.9.2",
+                "typescript": "^5.7.3"
+        }
+}
