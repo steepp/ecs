@@ -1,0 +1,31 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    /*
+    display: flex;
+    background: #eeeeee;
+    width: 100%;
+    height: 100%;
+    */
+}
+
+canvas {
+    background: rgb(36,33,36);
+    position: absolute;
+    /*
+    width: 100%;
+    height: 100%;
+    */
+}
+
+div.stats {
+    position: absolute;
+    background: rgba(76, 175, 80, 0.3);
+    height: 100px;
+    width: 200px;
+}
