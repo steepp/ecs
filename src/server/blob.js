@@ -22,15 +22,14 @@ class Blob {
 		this.weapon = new Weapon();
 		this.dx = 0;
 		this.dy = 0;
-		this.direction = null;	// mouse direction. updated in Game class
-		this.visionField = null;
+		this.direction = null;		// mouse direction. updated in Game class
+		this.visionField = null; 	// vision is set in Game class when the player is added to the game
 		this.vision = [];		// array of polygon points [{x:1, y:2}, {...}, ...]
 	}
 
 	update(t) {
 		//
 		// update vision polygon here
-		// vision is set in Game class when the player is added to the game
 		// Vision field contaings mutable rectangles and player object!
 		// we need to update a vision field to recalculate the polygon
 		this.visionField.update();
