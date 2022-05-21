@@ -28,8 +28,7 @@ class Blob {
 	}
 
 	update(t) {
-		//
-		// update vision polygon here
+		// Update vision polygon
 		// Vision field contaings mutable rectangles and player object!
 		// we need to update a vision field to recalculate the polygon
 		this.visionField.update();

@@ -66,7 +66,7 @@ class Game {
         this.sockets[socket.id] = socket;
         this.clientsInputSequence[socket.id] = [];
         this.bullets[socket.id] = [];
- 
+
         let nickname = "Player " + this.playersCounter;
         if (data) nickname = data;
 
@@ -75,7 +75,12 @@ class Game {
         this.players[socket.id] = new Blob(socket.id, nickname, x, y, 15);
 
         // Initialize vision field for a player
-        this.players[socket.id].visionField = fog(this.rectangles, this.players[socket.id]);
+        // add the map as a rectange for corect vision polygon
+        let r = [...this.rectangles, new Rectangle(0, 0, this.SIZE.width, this.SIZE.height)];
+        let f = fog(r, this.players[socket.id]);
+        this.players[socket.id].visionField = f;
+        // set vision polygon so client doesn't get error rendering player without vision polygon
+        this.players[socket.id].vision = f.getVisibleArea();
 
         this.playersCounter++;
     }

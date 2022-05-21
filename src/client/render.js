@@ -23,11 +23,11 @@ window.addEventListener('resize', canvasResize);
 // TODO:
 //window.addEventListener("resize", debounce(1000, canvasResize));
 
-/*
 const drawVisibleAreaAtop = addLayer(drawPolygon, "destination-atop");
 const drawPlayerOver = addLayer(drawPlayer, "destination-over");
 const drawPolygonOver = addLayer(drawPolygon, "destination-over");
-*/
+const drawRectangleOver = addLayer(drawRectangle, "source-over");
+
 
 export function draw(data) {
     if (!data.player) {
@@ -50,8 +50,21 @@ export function draw(data) {
     ctx.save();
     ctx.translate(canvas.width / 2 - data.player.x, canvas.height / 2 - data.player.y);
 
+    
+    // TODO: draw vision polygon
+    if (data.player.vision) drawVisibleAreaAtop(data.player.vision);
+    //if (data.player.vision) drawPolygon(data.player.vision);
+
+
     drawBackground(MAP_SIZE.width, MAP_SIZE.height);
+
+
     // Draw energy food
+    // should also be source-atop ??
+    ctx.save();
+    //ctx.globalCompositeOperation = "destination-over";
+    //ctx.globalCompositeOperation = "source-atop";
+    ctx.globalCompositeOperation = "source-atop";
     data.food.forEach((f) => drawFood(f));
 
     // Draw other players
@@ -61,30 +74,20 @@ export function draw(data) {
 
     data.bullets.forEach(b => drawBullet(b));
 
-    // make fow of war effect
-    //drawVisibleAreaAtop(player.vision);
-    //drawPlayerOver(player);
+    ctx.restore();
+
+
+    // TODO: LERP vision polygon
     drawPlayer(data.player);
-    //drawPolygonOver(world);
+
     rectangles.forEach((p) => {
-        drawRectangle(p);
+        //drawRectangle(p);
+        drawRectangleOver(p);
     });
 
     ctx.restore();
     writeMessageOnCanvas(ctx, fps.getFrames(), 10, 25);
 }
-/*
-const d = () => () => (drawBackground(), drawPlayer)
-
-function d() {
-    function drawBackground() {
-
-    }
-    function drawPlayer() {}
-    drawBackground();
-    return drawPlayer;
-}
-*/
 
 function drawHealthBar(p) {
     ctx.save();
@@ -215,10 +218,11 @@ function drawFood(f) {
     ctx.restore();
 }
 
-function drawPolygon(points, fill = false) {
+function drawPolygon(points, fill = true) {
     ctx.save();
     ctx.lineWidth = 5;
     ctx.strokeStyle = "rgb(0,255,0)";
+    //ctx.strokeStyle = "black";
     ctx.fillStyle = "yellow";
     ctx.beginPath();
     let [x, y] = points[0];
@@ -226,12 +230,16 @@ function drawPolygon(points, fill = false) {
     for (let i = 1; i < points.length; i++) {
         [x, y] = points[i];
         ctx.lineTo(x, y);
+
         //ctx.stroke();
+
     }
     [x, y] = points[0];
     ctx.lineTo(x, y);
+
     //ctx.stroke();
     //ctx.closePath();
+
     if (fill) ctx.fill();
     ctx.restore();
 }
