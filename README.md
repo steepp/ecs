@@ -2,7 +2,9 @@
 io game
 
 Start the game:
-`npm run dev`
+```bash
+npm run dev
+```
 
 Stop the game:
 ```bash
