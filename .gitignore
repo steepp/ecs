@@ -105,3 +105,13 @@ dist
 
 .idea
 package-lock.json
+*.swp
+.zed
+eslint.config*
+
+*.bak
+
+tags
+cscope.out
+
+.DS_Store

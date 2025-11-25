@@ -1,153 +1,193 @@
-import { prop, last, compose } from "./support.js"
-import { measureFPS } from "./misc.js";
-import { draw } from "./render.js";
-import { input } from "./input.js";
+import { fps } from "./misc.js";
+import { Position, Color, Radius } from "./entity.js";
+import { Renderer, getCanvasCtx } from "./render.js";
+import { SocketNetwork } from "./network.js";
+import { getControls } from "./controls.js";
+import {
+        updateClientServerTime,
+        getEstimatedServerTime,
+        SnapshotRepository,
+        EntityContext,
+        EntityFactory,
+} from "./game.js";
 
-let requestId;
 let delta = 0;
 let oldTime = 0;
+let requestId = null;
+let intervalID = null;
 
-let gameBuffer = [];
+const snapshots = new SnapshotRepository();
+const network = new SocketNetwork();
+const econtext = new EntityContext();
+const visitor = Renderer(getCanvasCtx());
+const updateRequest = new UpdateRequest();
 
-let serverTime = null;
-let clientTime = null;
-
-const DELAY = 100;
-const PROPS_TO_LERP = ['x', 'y'];
-const FIELDS_TO_LERP = ['bullets', 'player', 'players'];
-
-export let fps = new measureFPS();
-
-const MSG_UPDATE = "update";
-const MSG_DISCON = "disconnect";
-const MSG_PLAY = "start";
-const MSG_INPUT = "input";
-
-const socket = io();
-
-//socket.on(MSG_UPDATE, (data) => (gameStateBuffer.push(data), (firstServerTimeStamp = data.t)));
-
-socket.on(MSG_UPDATE, (data) => {
-    gameBuffer.push(data);
-    serverTime = data.t;
-    clientTime = Date.now();
-});
-
-socket.on(MSG_DISCON, stopAnimationFrame);
-
-socket.emit(MSG_PLAY, "Nickname", (data) => {
-    serverTime = data.t;
-    clientTime = Date.now();
-    gameBuffer.push(data)
-    startAnimationFrame();
-});
-
-const lerp = (v0, v1, n) => v0 + (v1 - v0) * n;
-
-const mainLoop = (currentTime) => {
-    fps.countFrames(currentTime);
-
-    delta = (currentTime - oldTime) / 1000; // time in seconds
-    oldTime = currentTime;
-
-    const dx = input.keys.a ? -1 : input.keys.d ? 1 : 0;
-    const dy = input.keys.w ? -1 : input.keys.s ? 1 : 0;
-
-    socket.emit(MSG_INPUT, {
-        dx,
-        dy,
-        delta,
-        timeStamp: currentTime,
-        mouseClick: input.mouse.click,
-        mouseDirection: input.mouse.direction
-    });
-
-    //if (!gameStateBuffer.length > 1) return last(gameStateBuffer);
-
-    const t = serverTime + (Date.now() - clientTime) - DELAY;
-
-    //let baseIndex = gameStateBuffer.findIndex(s => s.t <= t);
-    let baseIndex = getIndex(gameBuffer, t);
-
-    //if (baseIndex < 0 || baseIndex + 1 > gameBuffer.length - 1) {
-    if (baseIndex >= 0 && baseIndex + 1 < gameBuffer.length) {
-        let baseUpdate = gameBuffer[baseIndex];
-        let nextUpdate = gameBuffer[baseIndex + 1];
-        // Remove older game states
-        if (baseIndex > 0) gameBuffer.splice(0, baseIndex);
-
-        let progress = (t - baseUpdate.t) / (nextUpdate.t - baseUpdate.t);
-        let lastLerped = lerpGameState(baseUpdate, nextUpdate, progress);
-        let state = last(gameBuffer);
-        draw({
-            food: state.food,
-            rectangles: state.rectangles,
-            arena: state.arena,
-            player: lastLerped.player,
-            entities: lastLerped.players,
-            bullets: lastLerped.bullets
-        });
-    } else {
-        let state = last(gameBuffer);
-        draw({
-            food: state.food,
-            rectangles: state.rectangles,
-            arena: state.arena,
-            player: state.player,
-            entities: state.players,
-            bullets: state.bullets
-        });
-    }
-    requestId = requestAnimationFrame(mainLoop);
+const resolver = {
+        x: Position,
+        y: Position,
+        color: Color,
+        r: Radius,
 };
 
+let matchingEntityIds = null;
+let matchingEntityPairsAttrs = null;
+
+const CL_INTERP = 1;
+
+const computeAlpha = (t, t0, t1) => (t - t0) / (t1 - t0);
+
+const findMatchingEntityId = (s1, s2) =>
+        s2.keys().filter((k) => k in s1.keys());
+
+class UpdateRequest {
+        constructor() {
+                this.req = {};
+        }
+
+        init(obj) {
+                Object.assign(this.req, obj);
+        }
+
+        execute(id, econtext) {
+                Object.keys(this.req).forEach((key) => {
+                        econtext.get(id, resolver[key])?.update(this.req[key]);
+                });
+        }
+
+        clear() {
+                Object.keys(this.req).forEach((k) => delete this.req[k]);
+        }
+}
+
+function selectDataForUpdate(id) {
+        return matchingEntityPairsAttrs.find((pair) => pair[0][id]);
+}
+
+function updateAttributes(entity) {
+        const upd = selectDataForUpdate(entity.id);
+        let val = null;
+        Object.keys(upd).forEach((k) => {
+                val = upd[k];
+                //iterate through components and update values
+        });
+}
+
+function mainLoop(currentTime) {
+        fps.countFrames(currentTime);
+
+        delta = (currentTime - oldTime) / 1000; // time in seconds
+        oldTime = currentTime;
+
+        if (CL_INTERP) {
+                const DELAY = 100;
+                const t = getEstimatedServerTime() - DELAY;
+
+                const timestamps = Array.from(snapshots.keys()).sort();
+                const i = timestamps.findIndex((k) => k <= t);
+
+                const condition = i < 0 || (i == 0 && snapshots.size() == 1);
+                if (!condition) {
+                        const t0 = timestamps[i];
+                        const t1 = timestamps[i + 1];
+
+                        const alpha = computeAlpha(t, t0, t1);
+
+                        const snapshotStartEntities = snapshots.get(t0);
+                        const snapshotNextEntities = snapshots.get(t1);
+
+                        matchingEntityIds = findMatchingEntityId(
+                                snapshotNextEntities,
+                                snapshotStartEntities,
+                        );
+
+                        matchingEntityPairsAttrs = matchingEntityIds.forEach(
+                                (id) => {
+                                        const entityStart =
+                                                snapshotStartEntities[id];
+                                        const entityNext =
+                                                snapshotNextEntities[id];
+                                        return [entityStart, entityNext];
+                                },
+                        );
+                }
+        }
+
+        const entities = matchingEntityIds.map(EntityFactory.createEntity);
+
+        entities.forEach(updateAttributes);
+
+        entities.forEach((entity) => entity.draw(visitor, econtext));
+
+        requestId = requestAnimationFrame(mainLoop);
+}
+
+function updateContext(entity) {
+        for (let component of econtext.get(entity).values) {
+                // components repository better to be list or map?
+                component.handleUpdate(entity);
+        }
+}
+
+/**
+ * The frequency of calls to the callback function will generally
+ * match the display refresh rate. `requestAnimationFrame()` calls
+ * are paused in most browsers when running in background tabs or
+ * hidden <iframe>s, in order to improve performance and battery life.
+ */
 function startAnimationFrame() {
-    requestId = requestAnimationFrame(mainLoop);
+        requestId = requestAnimationFrame(mainLoop);
 }
 
 function stopAnimationFrame() {
-    if (requestId) cancelAnimationFrame(requestId);
+        if (requestId) cancelAnimationFrame(requestId);
 }
 
-function lerpObject(obj1 = {}, obj2 = {}, props = [], prog = 0) {
-    let ips = {};
-    for (let p of props) {
-        ips[p] = lerp(obj1[p], obj2[p], prog);
-    }
-    return ips;
-}
+function saveSnapshot(snapshot) {
+        const t = snapshot.t;
+        let entities = snapshot.data;
+        snapshots.set(t, entities);
 
-function lerpGameState(state1, state2, progress) {
-    // lerped state doesn't have other properties used for rendering!
-    let res = {};
-    FIELDS_TO_LERP.forEach(f => {
-        if (!(f in state1)) throw Error('Game state does not have property ' + f);
-        if (Array.isArray(state1[f])) {
-            //state1.map(o => lerpObject(o, state2.find(o2 => o.id === o2.id), PROPS_TO_LERP, progress));
-            res[f] = state1[f].map(o => {
-                let o2 = state2[f].find(i => i.id == o.id);
-                if (o2) {
-                    return { ...o, ...lerpObject(o, o2, PROPS_TO_LERP, progress) };
-                }
-                return o;
-            });//.filter(i => i);
-        } else if (typeof state1[f] === 'object') {
-            res[f] = { ...state1[f], ...lerpObject(state1[f], state2[f], PROPS_TO_LERP, progress) };
-        } else {
-            throw Error('Cannot interpolate this property!');
+        if (snapshots.size > 3) {
+                snapshots.truncate();
         }
-    });
-    return res;
 }
 
-function getIndex(buffer, timestamp) {
-    let baseIndex = -1;
-    for (let i = buffer.length - 1; i >= 0; i--) {
-        if (buffer[i].t <= timestamp) {
-        //if (buffer[i].t <= timestamp && buffer[i + 1].t >= timestamp) {
-            baseIndex = i;
-            break;
-        }
-    }
-    return baseIndex;
+function inititLocalEntities(snapshot) {
+        const entities = snapshot.data;
+        entities.forEach(EntityFactory.createEntity);
 }
+
+/**
+ * Start the game loop.
+ */
+function startRenderLoop() {
+        const delay = 1000 / 30;
+        intervalID = setInterval(() => {
+                const userKeys = getControls();
+                network.sendInput(userKeys);
+        }, delay);
+        startAnimationFrame();
+}
+
+(() => {
+        network.onDisconect(() => {
+                console.log("Disconnected from server.");
+                clearInterval(intervalID);
+                stopAnimationFrame();
+        });
+
+        network.onMessage((snapshot) => {
+                updateClientServerTime(snapshot?.t || Date.now());
+                saveSnapshot(snapshot);
+        });
+
+        const onConnect = (snapshot) => {
+                const serverTime = snapshot?.t || Date.now();
+                updateClientServerTime(serverTime);
+                saveSnapshot(snapshot);
+                inititLocalEntities(snapshot);
+                startRenderLoop();
+        };
+        const nickName = "Romulus_" + new Date().toJSON();
+        network.connect(nickName, onConnect);
+})();
