@@ -35,25 +35,22 @@ class ComponentMultiArray {
 }
 
 export class Component {
-        constructor() {
-                this.arr = [];
-        }
-
+        #arr = []
         addVal(val) {
-                //TODO
+                this.#arr.push(val);
         }
-
         getVal(index) {
-                return this.arr[index];
+                return this.#arr[index];
         }
-
         updateVal(index, val) {
-                this.arr[index] = val;
+                this.#arr[index] = val;
         }
-
+        #lastIndex() {
+                return this.#arr.length-1;
+        }
         removeVal(removeIndex) {
-                this.arr[removeIndex] = this.arr[this.lastIndex];
-                this.arr.pop();
+                this.#arr[removeIndex] = this.#arr[this.#lastIndex()];
+                this.#arr.pop();
         }
 }
 
