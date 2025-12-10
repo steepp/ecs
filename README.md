@@ -1,2 +1,2 @@
-# ecs
+# ecs prototype
 sandbox project
