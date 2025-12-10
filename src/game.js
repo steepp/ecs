@@ -34,13 +34,17 @@ class ComponentMultiArray {
         }
 }
 
-class Component {
+export class Component {
         constructor() {
                 this.arr = [];
         }
 
         addVal(val) {
                 //TODO
+        }
+
+        getVal(index) {
+                return this.arr[index];
         }
 
         updateVal(index, val) {
