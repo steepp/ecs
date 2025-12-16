@@ -1,7 +1,6 @@
 import { expect, it } from "vitest";
 import { ComponentArray, ComponentMultiArray } from "src/component.js";
 
-
 it("component add value", () => {
         const comp = new ComponentArray();
         comp.addVal(1);
@@ -32,12 +31,10 @@ it("component remove value", () => {
         expect(comp.getVal(0)).toEqual(77);
 });
 
-it.skip("componentmultiarray add value", () => {
+it("ComponentMultiArray adds new component", () => {
         const cmarr = new ComponentMultiArray();
+        cmarr.add("x");
 
-        cmarr.add()
-
-        cmarr.componentsMultiArray
-
-        expect(comp.getVal(0)).toEqual(77);
+        expect(cmarr.components.length).toEqual(1);
+        expect(cmarr.components[0]).toEqual("x");
 });

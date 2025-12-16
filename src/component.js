@@ -23,27 +23,26 @@ export class ComponentArray {
         }
 }
 
-export class ComponentMultiArray extends ComponentArray {
+export class ComponentMultiArray {
         constructor() {
-                super();
                 this.lastIndex = 0;
-                this.mapp = {};
+                this.componentToIndex = {};
                 this.multiarr = [];
+                this.components = [];
         }
 
         add(componentName) {
-                this.mapp[componentName] = this.lastIndex;
-                super.addVal(new ComponentArray());
+                this.componentToIndex[componentName] = this.lastIndex;
+                this.components.push(componentName);
 
-                this.multiarr.push(componentName);
+                this.multiarr.push(new ComponentArray());
 
                 this.lastIndex++;
         }
 
         updateComponentValueAtIndex(componentName, idx, val) {
-                const compOffset = this.mapp[componentName];
-                super.getVal(compOffset).updateVal(idx, val);
-                //this.multiarr[compOffset].updateVal(idx, val);
+                const compOffset = this.componentToIndex[componentName];
+                this.multiarr[compOffset].updateVal(idx, val);
         }
 
         removeIndexValueInAllComponents(idx) {
