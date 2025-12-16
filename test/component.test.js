@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { Component } from "src/game.js";
+import { Component } from "src/component.js";
 
 const comp = new Component();
 
