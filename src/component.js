@@ -1,25 +1,25 @@
 export class ComponentArray {
-        #arr = [];
+        #items = [];
 
-        addVal(val) {
-                this.#arr.push(val);
+        add(val) {
+                this.#items.push(val);
         }
 
-        getVal(index) {
-                return this.#arr[index];
+        get(index) {
+                return this.#items[index];
         }
 
-        updateVal(index, val) {
-                this.#arr[index] = val;
+        set(index, val) {
+                this.#items[index] = val;
         }
 
         #lastIndex() {
-                return this.#arr.length - 1;
+                return this.#items.length - 1;
         }
 
-        removeVal(removeIndex) {
-                this.#arr[removeIndex] = this.#arr[this.#lastIndex()];
-                this.#arr.pop();
+        remove(idx) {
+                this.#items[idx] = this.#items[this.#lastIndex()];
+                this.#items.pop();
         }
 }
 
