@@ -47,6 +47,5 @@ export class ComponentMultiArray {
 
         removeIndexValueInAllComponents(idx) {
                 this.multiarr.forEach((c) => c.removeVal(idx));
-                this.lastIndex--;
         }
 }
