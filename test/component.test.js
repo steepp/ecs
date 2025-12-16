@@ -20,6 +20,24 @@ it("component update value", () => {
         expect(comp.get(0)).toBe(11);
 });
 
+it("component get out of range", () => {
+        const comp = new ComponentArray();
+
+        expect(() => comp.get(0)).toThrowError();
+});
+
+it("component set out of range", () => {
+        const comp = new ComponentArray();
+
+        expect(() => comp.set(0, 1)).toThrowError();
+});
+
+it("component remove out of range", () => {
+        const comp = new ComponentArray();
+
+        expect(() => comp.remove(0)).toThrowError();
+});
+
 it("component remove value", () => {
         const comp = new ComponentArray();
 

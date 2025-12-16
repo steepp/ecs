@@ -1,23 +1,32 @@
 export class ComponentArray {
         #items = [];
 
-        add(val) {
-                this.#items.push(val);
-        }
-
-        get(index) {
-                return this.#items[index];
-        }
-
-        set(index, val) {
-                this.#items[index] = val;
-        }
-
         #lastIndex() {
                 return this.#items.length - 1;
         }
 
+        #checkRange(index) {
+                if (index < 0 || index >= this.#items.length) {
+                        throw new RangeError(`Index ${index} out of range.`);
+                }
+        }
+
+        add(val) {
+                this.#items.push(val);
+        }
+
+        get(idx) {
+                this.#checkRange(idx);
+                return this.#items[idx];
+        }
+
+        set(idx, val) {
+                this.#checkRange(idx);
+                this.#items[idx] = val;
+        }
+
         remove(idx) {
+                this.#checkRange(idx);
                 this.#items[idx] = this.#items[this.#lastIndex()];
                 this.#items.pop();
         }
