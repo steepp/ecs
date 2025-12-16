@@ -40,6 +40,17 @@ export class ComponentMultiArray {
                 this.lastIndex++;
         }
 
+        removeComponent(componentName) {
+                const offset = this.componentToIndex[componentName];
+                this.multiarr[offset] = this.multiarr[this.lastIndex];
+                this.multiarr.pop();
+
+                this.components[offset] = this.components[this.lastIndex];
+                this.components.pop();
+
+                this.lastIndex--;
+        }
+
         updateComponentValueAtIndex(componentName, idx, val) {
                 const compOffset = this.componentToIndex[componentName];
                 this.multiarr[compOffset].updateVal(idx, val);
