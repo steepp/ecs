@@ -5,7 +5,8 @@
         "description": "",
         "main": "main.js",
         "scripts": {
-                "prettier": "npx prettier -c $INIT_CWD/**/*.js",
+                "prettier:check": "npx prettier -c $INIT_CWD/**/*.js",
+                "prettier:write": "npx prettier --write $INIT_CWD/**/*.js",
                 "lint": "npx eslint src",
                 "test": "vitest run"
 
