@@ -1,4 +1,4 @@
-export class ComponentArray {
+export class ItemContainer {
         #items = [];
 
         #lastIndex() {
@@ -44,7 +44,7 @@ export class ComponentMultiArray {
                 this.componentToIndex[componentName] = this.lastIndex;
                 this.components.push(componentName);
 
-                this.multiarr.push(new ComponentArray());
+                this.multiarr.push(new ItemContainer());
 
                 this.lastIndex++;
         }

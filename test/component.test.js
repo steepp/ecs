@@ -1,46 +1,41 @@
-import { expect, it } from "vitest";
-import { ComponentArray, ComponentMultiArray } from "src/component.js";
+import { beforeEach, expect, it } from "vitest";
+import { ItemContainer, ComponentMultiArray } from "src/component.js";
+
+let comp;
+
+beforeEach(() => {
+        comp = new ItemContainer();
+});
 
 it("component add value", () => {
-        const comp = new ComponentArray();
         comp.add(1);
         expect(comp.get(0)).toBe(1);
 });
 
 it("component add arr value", () => {
-        const comp = new ComponentArray();
         comp.add([]);
         expect(comp.get(0)).toStrictEqual([]);
 });
 
 it("component update value", () => {
-        const comp = new ComponentArray();
         comp.add(77);
         comp.set(0, 11);
         expect(comp.get(0)).toBe(11);
 });
 
 it("component get out of range", () => {
-        const comp = new ComponentArray();
-
         expect(() => comp.get(0)).toThrowError();
 });
 
 it("component set out of range", () => {
-        const comp = new ComponentArray();
-
         expect(() => comp.set(0, 1)).toThrowError();
 });
 
 it("component remove out of range", () => {
-        const comp = new ComponentArray();
-
         expect(() => comp.remove(0)).toThrowError();
 });
 
 it("component remove value", () => {
-        const comp = new ComponentArray();
-
         comp.add(112);
         comp.add(77);
 
@@ -50,8 +45,6 @@ it("component remove value", () => {
 });
 
 it("component removes last value", () => {
-        const comp = new ComponentArray();
-
         comp.add(112);
         comp.add(77);
 
