@@ -1,4 +1,4 @@
-export class ItemContainer {
+export class ComponentContainer {
         #items = [];
 
         #lastIndex() {
@@ -7,7 +7,7 @@ export class ItemContainer {
 
         #checkRange(index) {
                 if (index < 0 || index >= this.#items.length) {
-                        throw new RangeError(`Index ${index} out of range.`);
+                        throw new RangeError(`Index ${index} out of range`);
                 }
         }
 
@@ -32,40 +32,83 @@ export class ItemContainer {
         }
 }
 
-export class ComponentMultiArray {
+class Index {
         constructor() {
                 this.lastIndex = 0;
-                this.componentToIndex = {};
-                this.multiarr = [];
-                this.components = [];
+                this.itemToIndex = {};
         }
 
-        add(componentName) {
-                this.componentToIndex[componentName] = this.lastIndex;
-                this.components.push(componentName);
-
-                this.multiarr.push(new ItemContainer());
-
+        add(key = "") {
+                this.itemToIndex[key] = this.lastIndex;
                 this.lastIndex++;
         }
 
-        removeComponent(componentName) {
-                const offset = this.componentToIndex[componentName];
-                this.multiarr[offset] = this.multiarr[this.lastIndex];
-                this.multiarr.pop();
-
-                this.components[offset] = this.components[this.lastIndex];
-                this.components.pop();
-
+        drop(key = "") {
+                const idx = this.itemToIndex[key];
+                delete this.itemToIndex[key];
                 this.lastIndex--;
+                return idx;
         }
 
-        updateComponentValueAtIndex(componentName, idx, val) {
-                const compOffset = this.componentToIndex[componentName];
-                this.multiarr[compOffset].updateVal(idx, val);
+        getNext() {
+                return this.lastIndex;
         }
 
-        removeIndexValueInAllComponents(idx) {
-                this.multiarr.forEach((c) => c.removeVal(idx));
+        getIndex(item) {
+                return this.itemToIndex[item];
+        }
+}
+
+export class EntityComponentMultiArray {
+        constructor() {
+                this.componentIndex = new Index();
+                this.multiarr = [];
+        }
+
+        addColumnPlayer() {}
+        deleteColumnPlayer() {} // removeIndexValueInAllComponents
+
+        get(row, col) {
+                return this.multiarr[row][col];
+        }
+
+        set(row, col, val) {
+                this.multiarr[row][col] = val;
+        }
+
+        addComponentsContainer(name) {
+                this.componentIndex.add(name);
+                this.#addRow();
+        }
+
+        deleteComponentsContainer(name) {
+                const offset = this.componentIndex.drop(name);
+                this.#deleteRow(offset);
+        }
+
+        getComponent(componentContainer) {
+                this.#getRow(this.componentIndex.get(componentContainer));
+        }
+
+        #checkRange(index) {
+                if (index < 0 || index >= this.multiarr.length) {
+                        throw new RangeError(`Index ${index} out of range`);
+                }
+        }
+
+        #addRow() {
+                this.multiarr.push([]);
+        }
+
+        #getRow(idx) {
+                this.#checkRange(idx);
+                return this.multiarr[idx];
+        }
+
+        #deleteRow(idx) {
+                //swap-remove at index
+                this.#checkRange(idx);
+                this.multiarr[idx] = this.multiarr[this.multiarr.length - 1];
+                this.multiarr.pop();
         }
 }
