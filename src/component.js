@@ -59,6 +59,18 @@ class Index {
         }
 }
 
+function checkIndexRange(arr, idx) {
+        if (idx < 0 || idx >= arr.length) {
+                throw new RangeError(`Index out of range`);
+        }
+}
+
+function swapRemove(arr, idx) {
+        arr[idx] = arr[arr.length - 1];
+        arr.pop();
+        return arr;
+}
+
 export class EntityComponentMultiArray {
         constructor() {
                 this.componentIndex = new Index();
