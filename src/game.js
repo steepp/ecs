@@ -3,49 +3,6 @@ import { Entity } from "./entity.js";
 
 export const last = (xs) => xs[xs.length - 1];
 
-export class EntityRepository {
-        constructor() {
-                this.lastIndex = 0;
-                this.components = [];
-                this.entityIds = [];
-                this.entityToIndex = {};
-                this.componentToIndex = {};
-        }
-
-        add(id, component, val) {
-                this.entityToIndex[id] = this.lastIndex;
-                this.entityIds.push(id);
-                const compIdx = null;
-                this.components[compIdx] = [];
-
-                this.lastIndex++;
-        }
-
-        update(id, component, val) {
-                const idx = this.entityToIndex[id];
-                const compIdx = this.componentToIndex[component];
-                this.components[compIdx][idx] = val;
-        }
-
-        removeEntity(id) {
-                const indexToUpdate = this.entityToIndex[id];
-
-                component[indexToUpdate] = component[this.lastIndex];
-
-                const idToMove = this.entityIds[this.lastIndex];
-                this.entityToIndex[idToMove] = indexToUpdate;
-                this.entityIds[indexToUpdate] = idToMove;
-
-                component.pop();
-                this.entityIds.pop();
-                delete this.entityToIndex[id];
-        }
-
-        exists(id) {
-                return !!this.entityToIndex[id];
-        }
-}
-
 export class SnapshotRepository extends Map {
         constructor(...args) {
                 if (args && args > 0) {
