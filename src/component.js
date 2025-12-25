@@ -71,14 +71,10 @@ function swapRemove(arr, idx) {
         return arr;
 }
 
-export class EntityComponentMultiArray {
+export class MultiArray {
         constructor() {
-                this.componentIndex = new Index();
                 this.multiarr = [];
         }
-
-        addColumnPlayer() {}
-        deleteColumnPlayer() {} // removeIndexValueInAllComponents
 
         get(row, col) {
                 return this.multiarr[row][col];
@@ -88,39 +84,43 @@ export class EntityComponentMultiArray {
                 this.multiarr[row][col] = val;
         }
 
-        addComponentsContainer(name) {
-                this.componentIndex.add(name);
-                this.#addRow();
-        }
-
-        deleteComponentsContainer(name) {
-                const offset = this.componentIndex.drop(name);
-                this.#deleteRow(offset);
-        }
-
-        getComponent(componentContainer) {
-                this.#getRow(this.componentIndex.get(componentContainer));
-        }
-
-        #checkRange(index) {
-                if (index < 0 || index >= this.multiarr.length) {
-                        throw new RangeError(`Index ${index} out of range`);
-                }
-        }
-
-        #addRow() {
+        addRow() {
                 this.multiarr.push([]);
         }
 
-        #getRow(idx) {
-                this.#checkRange(idx);
+        getRow(idx) {
+                checkIndexRange(this.multiarr, idx);
                 return this.multiarr[idx];
         }
 
-        #deleteRow(idx) {
-                //swap-remove at index
-                this.#checkRange(idx);
-                this.multiarr[idx] = this.multiarr[this.multiarr.length - 1];
-                this.multiarr.pop();
+        deleteRow(idx) {
+                checkIndexRange(this.multiarr, idx);
+                swapRemove(this.multiarr, idx);
+        }
+
+        deleteColumn(idx) {
+                checkIndexRange(this.multiarr[0], idx);
+                this.multiarr.forEach((arr) => swapRemove(arr, idx));
+        }
+}
+
+export class EntityComponentMultiArray extends MultiArray {
+        constructor() {
+                super();
+                this.componentIndex = new Index();
+        }
+
+        addComponent(name) {
+                this.componentIndex.add(name);
+                this.addRow();
+        }
+
+        deleteComponent(name) {
+                const offset = this.componentIndex.drop(name);
+                this.deleteRow(offset);
+        }
+
+        getComponent(componentContainer) {
+                this.getRow(this.componentIndex.get(componentContainer));
         }
 }

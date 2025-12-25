@@ -1,11 +1,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { ItemContainer, ComponentMultiArray } from "src/component.js";
+import {
+        ComponentContainer,
+        MultiArray,
+        EntityComponentMultiArray,
+} from "src/component.js";
 
 describe("ItemContainer", () => {
         let comp;
 
         beforeEach(() => {
-                comp = new ItemContainer();
+                comp = new ComponentContainer();
         });
 
         it("adds value", () => {
@@ -55,36 +59,54 @@ describe("ItemContainer", () => {
         });
 });
 
-describe("ComponentMultiArray ", () => {
+describe("Multi-Array ", () => {
         let cmarr;
 
         beforeEach(() => {
-                cmarr = new ComponentMultiArray();
+                cmarr = new MultiArray();
         });
 
-        it("adds new components", () => {
-                cmarr.add("x");
-                cmarr.add("color");
+        it("adds new row", () => {
+                cmarr.addRow();
 
-                expect(cmarr.components.length).toEqual(2);
-                expect(cmarr.components).toEqual(
-                        expect.arrayContaining(["x", "color"]),
+                expect(cmarr.multiarr.length).toEqual(1);
+                expect(cmarr.multiarr).toEqual(expect.arrayContaining([[]]));
+        });
+
+        it("remove row", () => {
+                cmarr.addRow();
+
+                cmarr.deleteRow(0);
+
+                expect(cmarr.multiarr.length).toEqual(0);
+        });
+});
+
+describe("EntityComponentMultiArray", () => {
+        let cmarr;
+
+        beforeEach(() => {
+                cmarr = new EntityComponentMultiArray();
+        });
+
+        it("adds new row", () => {
+                cmarr.addComponent("x");
+                cmarr.addComponent("color");
+
+                expect(cmarr.multiarr.length).toEqual(2);
+                expect(cmarr.multiarr).toEqual(
+                        expect.arrayContaining([[], []]),
                 );
-
-                expect(cmarr.lastIndex).toEqual(2);
         });
 
         it("removes component", () => {
-                cmarr.add("x");
-                cmarr.add("color");
+                cmarr.addComponent("x");
+                cmarr.addComponent("color");
 
-                cmarr.removeComponent("x");
+                cmarr.deleteComponent("x");
 
                 expect(cmarr.multiarr.length).toEqual(1);
 
-                expect(cmarr.components.length).toEqual(1);
-                expect(cmarr.components).not.toContain("x");
-
-                expect(cmarr.lastIndex).toEqual(1);
+                expect(cmarr.multiarr).not.toContain("x");
         });
 });
