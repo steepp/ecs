@@ -1,10 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-        ComponentContainer,
-        MultiArray,
-        EntityComponentMultiArray,
-} from "src/component.js";
-
+import { MultiArray, EntityComponentMultiArray } from "src/component.js";
 
 describe("Multi-Array ", () => {
         let cmarr;
