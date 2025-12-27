@@ -1,4 +1,4 @@
-import { fps } from "./misc.js";
+import { fps } from "./fps.js";
 
 function youdied() {
         const element = document.getElementsByTagName("h1")[0];

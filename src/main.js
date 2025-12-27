@@ -1,4 +1,4 @@
-import { fps } from "./misc.js";
+import { fps } from "./fps.js";
 import { Position, Color, Radius } from "./entity.js";
 import { Renderer, getCanvasCtx } from "./render.js";
 import { SocketNetwork } from "./network.js";
