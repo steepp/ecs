@@ -19,19 +19,19 @@ const handler = io.handler((req) => {
         const pathname = new URL(req.url).pathname;
 
         if (pathname === "/") {
-                return serveFile(req, "../index.html");
+                return serveFile(req, "index.html");
         }
 
         if (pathname.startsWith("/css")) {
                 return serveDir(req, {
-                        fsRoot: "../css/",
+                        fsRoot: "css/",
                         urlRoot: "css",
                 });
         }
 
         if (pathname.startsWith("/src")) {
                 return serveDir(req, {
-                        fsRoot: "../src/",
+                        fsRoot: "src/",
                         urlRoot: "src",
                 });
         }
