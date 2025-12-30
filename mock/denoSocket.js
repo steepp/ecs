@@ -42,7 +42,6 @@ const handler = io.handler((req) => {
 });
 
 Deno.serve({
-        //handler: io.handler(),
         handler,
         port: 3000,
 });
