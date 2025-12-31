@@ -11,6 +11,8 @@ export function getCanvasCtx() {
         return ctx;
 }
 
+let ctx = getCanvasCtx();
+
 /*
         function debounce(time, func) {
                 return () => setTimeout(func, time);
@@ -33,41 +35,23 @@ const drawVisibleAreaAtop = addLayer(drawPolygon, "destination-atop");
 //const drawPolygonOver = addLayer(drawPolygon, "destination-over");
 const drawRectangleOver = addLayer(drawRectangle, "source-over");
 
-function draw(data, delta) {
-        if (!data.player) {
-                throw new Error("no player");
-        }
-        const MAP_SIZE = data.arena;
-        const rectangles = data.rectangles;
+const MAP_SIZE = { width: 1000, height: 1000 };
 
-        //ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-        //ctx.fillStyle = 'rgba(228, 241, 254, 1)';
-
-        //ctx.fillStyle = 'rgba(46, 49, 49, 1)';
-        //ctx.fillStyle = 'black';
-        ctx.fillStyle = "#FFFAFF";
-
+export function draw(data, delta) {
+        ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        //ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
-        ctx.translate(
-                canvas.width / 2 - data.player.x,
-                canvas.height / 2 - data.player.y,
-        );
 
-        // TODO: draw vision polygon
-        if (data.player.vision) drawVisibleAreaAtop(data.player.vision);
-        //if (data.player.vision) drawPolygon(data.player.vision);
+        //ctx.translate(canvas.width / 2, canvas.height / 2);
 
         drawBackground(MAP_SIZE.width, MAP_SIZE.height);
 
         ctx.save();
-        //ctx.globalCompositeOperation = "destination-over";
-        //ctx.globalCompositeOperation = "source-atop";
+        /*
         ctx.globalCompositeOperation = "source-atop";
+
         data.food.forEach((f) => drawFood(f));
 
-        // Draw other players
         data.entities.forEach((element) => {
                 drawEnemy(element);
         });
@@ -80,7 +64,7 @@ function draw(data, delta) {
 
         rectangles.forEach((p) => {
                 drawRectangleOver(p);
-        });
+        });*/
 
         ctx.restore();
         writeMessageOnCanvas(ctx, fps.getFrames(), 10, 25);

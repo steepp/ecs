@@ -1,6 +1,6 @@
 import { fps } from "./fps.js";
 import { Position, Color, Radius } from "./entity.js";
-import { Renderer, getCanvasCtx } from "./render.js";
+import { Renderer, getCanvasCtx, draw } from "./render.js";
 import { SocketNetwork } from "./network.js";
 import { getControls } from "./controls.js";
 import {
@@ -19,8 +19,8 @@ let intervalID = null;
 const snapshots = new SnapshotRepository();
 const network = new SocketNetwork();
 const econtext = new EntityContext();
-const visitor = Renderer(getCanvasCtx());
-const updateRequest = new UpdateRequest();
+const visitor = new Renderer(getCanvasCtx());
+//const updateRequest = new UpdateRequest();
 
 const resolver = {
         x: Position,
@@ -32,7 +32,7 @@ const resolver = {
 let matchingEntityIds = null;
 let matchingEntityPairsAttrs = null;
 
-const CL_INTERP = 1;
+const CL_INTERP = 0;
 
 const computeAlpha = (t, t0, t1) => (t - t0) / (t1 - t0);
 
@@ -112,11 +112,12 @@ function mainLoop(currentTime) {
                 }
         }
 
-        const entities = matchingEntityIds.map(EntityFactory.createEntity);
+        //const entities = matchingEntityIds.map(EntityFactory.createEntity);
+        //entities.forEach(updateAttributes);
+        //entities.forEach((entity) => entity.draw(visitor, econtext));
 
-        entities.forEach(updateAttributes);
-
-        entities.forEach((entity) => entity.draw(visitor, econtext));
+        //draw(snapshots.getLatestSnapshot(), delta);
+        draw(delta);
 
         requestId = requestAnimationFrame(mainLoop);
 }

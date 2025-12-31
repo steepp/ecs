@@ -1,4 +1,6 @@
 import { Entity } from "./entity.js";
+import { EntityComponentMultiArray } from "./component.js";
+
 /* eslint-disable no-unused-vars */
 
 export const last = (xs) => xs[xs.length - 1];
@@ -12,11 +14,6 @@ export class SnapshotRepository extends Map {
         }
 
         set(k, v) {
-                if (!Number.isInteger(v) && !(v >= 0)) {
-                        throw new Error(
-                                `${k} is not an Integer. The key should be a timestamp.`,
-                        );
-                }
                 return super.set(k, v);
         }
 
@@ -131,22 +128,7 @@ function applyFuncAttrs(obj1 = {}, obj2 = {}, interpFunc) {
  * This acts as a factory and cache for Entity flyweight objects.
  */
 export class EntityFactory {
-        constructor(erepository) {
-                this.eRepository = erepository;
-        }
-
         static createEntity(id) {
-                if (this.eRepository.exists(id)) {
-                        return this.eRepository.get(id);
-                }
-                const entity = new Entity(id);
-
-                this.eRepository.add(entity);
-
-                positionsX.push(enity.x);
-                positionsY.push(entity.y);
-                colors.push(entity.color);
-
-                return entity;
+                return;
         }
 }

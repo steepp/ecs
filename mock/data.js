@@ -16,8 +16,4 @@ function print(data) {
         console.log(JSON.stringify(data));
 }
 
-let dataGenerator = getMockData();
-
-while (true) {
-        print(dataGenerator.next().value);
-}
+export let dataGenerator = getMockData();
