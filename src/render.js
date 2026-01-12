@@ -11,7 +11,8 @@ export function getCanvasCtx() {
         return ctx;
 }
 
-let ctx = getCanvasCtx();
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 /*
         function debounce(time, func) {
@@ -38,15 +39,18 @@ const drawRectangleOver = addLayer(drawRectangle, "source-over");
 const MAP_SIZE = { width: 1000, height: 1000 };
 
 export function draw(data, delta) {
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "#f0f0f0";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.save();
+        //ctx.save();
 
         //ctx.translate(canvas.width / 2, canvas.height / 2);
 
         drawBackground(MAP_SIZE.width, MAP_SIZE.height);
 
-        ctx.save();
+        //ctx.save();
+
+        data.forEach(drawPlayer);
+
         /*
         ctx.globalCompositeOperation = "source-atop";
 
@@ -66,7 +70,7 @@ export function draw(data, delta) {
                 drawRectangleOver(p);
         });*/
 
-        ctx.restore();
+        //ctx.restore();
         writeMessageOnCanvas(ctx, fps.getFrames(), 10, 25);
 }
 
@@ -99,7 +103,7 @@ function drawBackground(width, height) {
         // Draw borders.
         ctx.save();
         ctx.lineWidth = 3;
-        ctx.strokeStyle = "rgba(103, 128, 159, 1)";
+        ctx.strokeStyle = "rgb(0, 115, 255)";
         //ctx.strokeStyle = "blue";
         ctx.strokeRect(0, 0, width, height);
         ctx.restore();
@@ -146,22 +150,18 @@ function drawLine(start, end) {
         ctx.restore();
 }
 
-function drawPlayer(ctx, player) {
+function drawPlayer(player) {
         ctx.save();
-        //ctx.rotate(player.direction);
-        //ctx.translate(player.x, player.y);
         ctx.beginPath();
 
-        //ctx.fillStyle = "white";
-        ctx.arc(player.x, player.y, player.r, 0, 2 * Math.PI, true);
-        //drawCircle(ctx, player.x, player.y, player.r);
+        ctx.arc(player.x, player.y, player.r || 25, 0, 2 * Math.PI, true);
         ctx.shadowBlur = 10;
-        //ctx.shadowColor = "#DEFFEF";    // green rainbow pastel
-        ctx.shadowColor = "#FF7F7F";
+        ctx.shadowColor = "#DEFFEF";
 
-        ctx.fillStyle = player.isColliding ? "rgb(138,7,7)" : "#FF7F7F";
+        ctx.fillStyle = player.isColliding
+                ? "rgb(138,7,7)"
+                : player.color || "#0000FF";
         ctx.fill();
-        drawHealthBar(player);
         ctx.restore();
 }
 

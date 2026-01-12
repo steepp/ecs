@@ -116,8 +116,8 @@ function mainLoop(currentTime) {
         //entities.forEach(updateAttributes);
         //entities.forEach((entity) => entity.draw(visitor, econtext));
 
-        //draw(snapshots.getLatestSnapshot(), delta);
-        draw(delta);
+        draw(snapshots.getLatestSnapshot(), delta);
+        //draw(delta);
 
         requestId = requestAnimationFrame(mainLoop);
 }
