@@ -7,7 +7,7 @@
         "scripts": {
                 "prettier:check": "npx prettier -c $INIT_CWD/**/*.js",
                 "prettier:write": "npx prettier --write $INIT_CWD/**/*.js",
-                "lint": "npx eslint src",
+                "lint": "npx eslint -f mo",
                 "test": "vitest run"
 
         },
