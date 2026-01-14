@@ -3,6 +3,8 @@
 deno run --allow-net -R mock/denoSocket.js &
 server_pid=$!
 
+trap "kill $server_pid 2>/dev/null; echo 'Server stopped'; exit" INT
+
 sleep 2
 
 file="index.html"
