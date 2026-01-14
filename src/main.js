@@ -1,13 +1,11 @@
 import { fps } from "./fps.js";
-import { Position, Color, Radius } from "./entity.js";
-import { Renderer, getCanvasCtx, draw } from "./render.js";
+import { draw } from "./render.js";
 import { SocketNetwork } from "./network.js";
 import { getControls } from "./controls.js";
 import {
         updateClientServerTime,
         getEstimatedServerTime,
         SnapshotRepository,
-        EntityContext,
         EntityFactory,
 } from "./game.js";
 
@@ -18,16 +16,6 @@ let intervalID = null;
 
 const snapshots = new SnapshotRepository();
 const network = new SocketNetwork();
-const econtext = new EntityContext();
-const visitor = new Renderer(getCanvasCtx());
-//const updateRequest = new UpdateRequest();
-
-const resolver = {
-        x: Position,
-        y: Position,
-        color: Color,
-        r: Radius,
-};
 
 let matchingEntityIds = null;
 let matchingEntityPairsAttrs = null;
@@ -38,39 +26,6 @@ const computeAlpha = (t, t0, t1) => (t - t0) / (t1 - t0);
 
 const findMatchingEntityId = (s1, s2) =>
         s2.keys().filter((k) => k in s1.keys());
-
-class UpdateRequest {
-        constructor() {
-                this.req = {};
-        }
-
-        init(obj) {
-                Object.assign(this.req, obj);
-        }
-
-        execute(id, econtext) {
-                Object.keys(this.req).forEach((key) => {
-                        econtext.get(id, resolver[key])?.update(this.req[key]);
-                });
-        }
-
-        clear() {
-                Object.keys(this.req).forEach((k) => delete this.req[k]);
-        }
-}
-
-function selectDataForUpdate(id) {
-        return matchingEntityPairsAttrs.find((pair) => pair[0][id]);
-}
-
-function updateAttributes(entity) {
-        const upd = selectDataForUpdate(entity.id);
-        let val = null;
-        Object.keys(upd).forEach((k) => {
-                val = upd[k];
-                //iterate through components and update values
-        });
-}
 
 function mainLoop(currentTime) {
         fps.countFrames(currentTime);
@@ -112,21 +67,10 @@ function mainLoop(currentTime) {
                 }
         }
 
-        //const entities = matchingEntityIds.map(EntityFactory.createEntity);
-        //entities.forEach(updateAttributes);
-        //entities.forEach((entity) => entity.draw(visitor, econtext));
-
         draw(snapshots.getLatestSnapshot(), delta);
         //draw(delta);
 
         requestId = requestAnimationFrame(mainLoop);
-}
-
-function updateContext(entity) {
-        for (let component of econtext.get(entity).values) {
-                // components repository better to be list or map?
-                component.handleUpdate(entity);
-        }
 }
 
 /**

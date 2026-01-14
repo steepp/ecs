@@ -1,8 +1,3 @@
-import { Entity } from "./entity.js";
-import { EntityComponentMultiArray } from "./component.js";
-
-/* eslint-disable no-unused-vars */
-
 export const last = (xs) => xs[xs.length - 1];
 
 export class SnapshotRepository extends Map {
@@ -71,57 +66,6 @@ export function updateClientServerTime(t) {
 
 export function getEstimatedServerTime() {
         return serverTime + (Date.now() - clientTime);
-}
-
-class AbstractComponent extends Map {}
-
-class ComponentsMap extends AbstractComponent {}
-
-export class EntityContext extends Map {
-        add(entityId) {
-                this.set(entityId, new ComponentsMap());
-        }
-
-        update(entityId, updReq) {
-                const cs = super.get(entityId);
-                const c = cs.get(updReq.constructor);
-                if (!c) {
-                        this.set(entityId, updReq);
-                        return;
-                }
-                c.handleUpdate(updReq);
-        }
-
-        set(entityId, component) {
-                let _ = super.get(entityId);
-                _.set(component.constructor, component);
-        }
-
-        get(entityId, component) {
-                const comp = super.get(entityId).get(component);
-                if (!comp) {
-                        this.set(entityId, new component());
-                }
-                return super.get(entityId).get(component);
-        }
-
-        delete(entityId, component) {
-                if (!component) {
-                        super.delete(entityId);
-                }
-                const entityComponents = super.get(entityId);
-                entityComponents.delete(component);
-        }
-}
-
-function applyFuncAttrs(obj1 = {}, obj2 = {}, interpFunc) {
-        let res = {};
-
-        attrs.forEach((attr) => {
-                res[attr] = interpFunc(obj1[attr], obj2[attr], alpha);
-        });
-
-        return res;
 }
 
 /**

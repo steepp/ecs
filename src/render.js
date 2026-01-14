@@ -14,13 +14,6 @@ export function getCanvasCtx() {
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-/*
-        function debounce(time, func) {
-                return () => setTimeout(func, time);
-        }
-        window.addEventListener("resize", debounce(1000, canvasResize));
-*/
-
 function canvasResize() {
         const scale = Math.max(1, 800 / window.innerWidth);
         canvas.width = scale * window.innerWidth;
@@ -31,46 +24,16 @@ canvasResize();
 
 window.addEventListener("resize", canvasResize);
 
-const drawVisibleAreaAtop = addLayer(drawPolygon, "destination-atop");
-//const drawPlayerOver = addLayer(drawPlayer, "destination-over");
-//const drawPolygonOver = addLayer(drawPolygon, "destination-over");
-const drawRectangleOver = addLayer(drawRectangle, "source-over");
-
 const MAP_SIZE = { width: 1000, height: 1000 };
 
 export function draw(data, delta) {
         ctx.fillStyle = "#f0f0f0";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        //ctx.save();
-
-        //ctx.translate(canvas.width / 2, canvas.height / 2);
 
         drawBackground(MAP_SIZE.width, MAP_SIZE.height);
 
-        //ctx.save();
-
         data.forEach(drawPlayer);
 
-        /*
-        ctx.globalCompositeOperation = "source-atop";
-
-        data.food.forEach((f) => drawFood(f));
-
-        data.entities.forEach((element) => {
-                drawEnemy(element);
-        });
-
-        data.bullets.forEach((b) => drawBullet(b));
-
-        ctx.restore();
-
-        drawPlayer(data.player);
-
-        rectangles.forEach((p) => {
-                drawRectangleOver(p);
-        });*/
-
-        //ctx.restore();
         writeMessageOnCanvas(ctx, fps.getFrames(), 10, 25);
 }
 
@@ -240,29 +203,4 @@ function drawRectangle(r, fill = true) {
         ctx.shadowColor = "#DCD6FF";
         if (fill) ctx.fillRect(r.x, r.y, r.width, r.height);
         ctx.restore();
-}
-
-class Renderable {
-        constructor(ctx) {
-                if (this.constructor == Renderable) {
-                        throw new Error(
-                                "Abstract classes can't be instantiated.",
-                        );
-                }
-                this.ctx = ctx;
-        }
-
-        render() {
-                throw new Error("Method 'render()' must be implemented.");
-        }
-}
-
-export class Renderer extends Renderable {
-        drawRectangle(r) {
-                addLayer(() => drawRectangle(r), "source-over");
-        }
-
-        drawPlayer(player) {
-                drawPlayer(this.ctx, player);
-        }
 }
