@@ -4,17 +4,13 @@ import { dataGenerator } from "./data.js";
 
 const io = new Server();
 
-function emitMockData(socket) {
-        for (let i of dataGenerator) {
-                socket.emit("update", i);
-        }
-}
-
 io.on("connection", (socket) => {
         console.log(`socket ${socket.id} connected`);
 
-        // TODO: implement buffer truncation on client first
-        //setInterval(() => emitMockData(socket), 1000 / 30);
+        setInterval(
+                () => socket.emit("update", dataGenerator.next().value),
+                1000 / 30,
+        );
 
         socket.on("start", (data, cb) => {
                 console.log("client:", data);
