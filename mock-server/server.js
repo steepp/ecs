@@ -1,6 +1,7 @@
+import { dataGenerator } from "./player-movement.js";
+
 import { Server } from "https://deno.land/x/socket_io@0.2.1/mod.ts";
 import { serveDir, serveFile } from "jsr:@std/http/file-server";
-import { dataGenerator } from "./data.js";
 
 const io = new Server();
 
