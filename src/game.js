@@ -1,5 +1,3 @@
-export const last = (xs) => xs[xs.length - 1];
-
 export class SnapshotBuffer {
         constructor(s) {
                 if (s <= 0 || !Number.isInteger(s)) {
@@ -35,17 +33,9 @@ export class SnapshotBuffer {
 let serverTime,
         clientTime = null;
 
-function setServerTime(t) {
-        serverTime = t;
-}
-
-function setClientTime() {
-        clientTime = Date.now();
-}
-
 export function updateClientServerTime(t) {
-        setServerTime(t);
-        setClientTime();
+        serverTime = t;
+        clientTime = Date.now();
 }
 
 export function getEstimatedServerTime() {
