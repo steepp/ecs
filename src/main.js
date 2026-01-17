@@ -2,7 +2,7 @@ import { fps } from "./fps.js";
 import { draw } from "./render.js";
 import { SocketNetwork } from "./network.js";
 import { getControls } from "./controls.js";
-import { updateClientServerTime, SnapshotBuffer } from "./game.js";
+import { SnapshotBuffer, updateClientServerTime } from "./game.js";
 
 let delta = 0;
 let oldTime = 0;
