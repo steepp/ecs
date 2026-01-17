@@ -1,4 +1,4 @@
-import { SnapshotBuffer } from "src/game.js";
+import { SnapshotBuffer } from "./src/game.js";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("Circular buffer", () => {

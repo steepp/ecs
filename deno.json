@@ -1,7 +1,4 @@
 {
-        "imports": {
-                "src/": "./src/"
-        },
         "tasks": {
                 "eslint": "deno run -A npm:eslint . --ext .js",
                 "vitest": "deno run -A npm:vitest run"
