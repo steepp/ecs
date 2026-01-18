@@ -32,7 +32,7 @@ function mainLoop(currentTime) {
 
         for (let i of ids) {
                 _idx = idToIdx[i];
-                drawPlayer(xs[_idx], ys[_idx]);
+                drawPlayer(xs[_idx], ys[_idx], { "color": colors[_idx] });
         }
 
         requestId = requestAnimationFrame(mainLoop);

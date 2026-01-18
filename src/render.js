@@ -57,7 +57,7 @@ function drawLine(start, end) {
         ctx.restore();
 }
 
-export function drawPlayer(x, y, r = 25, color = "#0000FF") {
+export function drawPlayer(x, y, { r = 25, color = "#0000FF" }) {
         ctx.save();
         ctx.beginPath();
         ctx.arc(x, y, r, 0, 2 * Math.PI, true);

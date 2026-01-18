@@ -7,7 +7,7 @@ function* getMockData() {
                 y = (y + 1) % LIMIT;
                 yield {
                         t: Date.now(),
-                        data: [{ id: "abc123", x, y, color: "blue" }],
+                        data: [{ id: "abc123", x, y, color: "orange" }],
                 };
         }
 }
