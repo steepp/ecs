@@ -1,18 +1,25 @@
 import { fps } from "./fps.js";
-import { draw } from "./render.js";
-import { SocketNetwork } from "./network.js";
 import { getControls } from "./controls.js";
+import { SocketNetwork } from "./network.js";
 import { SnapshotBuffer, updateClientServerTime } from "./game.js";
+import { drawBackground, drawPlayer, writeMessageOnCanvas } from "./render.js";
+
+const gsbuffer = new SnapshotBuffer(200);
+const network = new SocketNetwork();
 
 let delta = 0;
 let oldTime = 0;
 let requestId = null;
 let intervalID = null;
 
-const snapshots = new SnapshotBuffer(200);
-const network = new SocketNetwork();
+const idToIdx = {};
+const ids = [];
+const xs = [];
+const ys = [];
+const colors = [];
 
-let tmp = [];
+let lastIndex = 0;
+let _idx = null;
 
 function mainLoop(currentTime) {
         fps.countFrames(currentTime);
@@ -20,11 +27,13 @@ function mainLoop(currentTime) {
         delta = (currentTime - oldTime) / 1000; // time in seconds
         oldTime = currentTime;
 
-        if (snapshots.count > 0) {
-                tmp = snapshots.read()["data"];
-        }
+        drawBackground(1000, 1000);
+        writeMessageOnCanvas(fps.getFrames(), 10, 25);
 
-        draw(tmp, delta);
+        for (let i of ids) {
+                _idx = idToIdx[i];
+                drawPlayer(xs[_idx], ys[_idx]);
+        }
 
         requestId = requestAnimationFrame(mainLoop);
 }
@@ -37,33 +46,38 @@ function stopAnimationFrame() {
         if (requestId) cancelAnimationFrame(requestId);
 }
 
-function startRenderLoop() {
-        const delay = 1000 / 30;
-        intervalID = setInterval(() => {
-                const userKeys = getControls();
-                network.sendInput(userKeys);
-        }, delay);
-        startAnimationFrame();
+function dismember(r) {
+        idToIdx[r.id] = lastIndex;
+        ids[lastIndex] = r.id;
+        xs[lastIndex] = r.x;
+        ys[lastIndex] = r.y;
+        colors[lastIndex] = r.color;
+        lastIndex++;
 }
 
 (() => {
         network.onDisconect(() => {
-                console.log("Disconnected from server.");
+                console.log("Disconnected from server");
                 clearInterval(intervalID);
                 stopAnimationFrame();
         });
 
         network.onMessage((snapshot) => {
-                updateClientServerTime(snapshot?.t || Date.now());
-                snapshots.write(snapshot);
+                updateClientServerTime(snapshot?.t);
+                gsbuffer.write(snapshot);
         });
 
-        const onConnect = (snapshot) => {
-                const serverTime = snapshot?.t || Date.now();
-                updateClientServerTime(serverTime);
-                snapshots.write(snapshot);
-                startRenderLoop();
-        };
         const nickName = "Romulus_" + new Date().toJSON();
-        network.connect(nickName, onConnect);
+
+        network.connect(nickName, (snapshot) => {
+                updateClientServerTime(snapshot?.t);
+                gsbuffer.write(snapshot);
+                snapshot.data.map(dismember);
+
+                intervalID = setInterval(() => {
+                        network.sendInput(getControls());
+                }, 1000 / 30);
+
+                startAnimationFrame();
+        });
 })();

@@ -1,6 +1,4 @@
-import { fps } from "./fps.js";
-
-function writeMessageOnCanvas(ctx, message, x, y) {
+export function writeMessageOnCanvas(message, x, y) {
         ctx.save();
         ctx.font = "13pt Calibri";
         ctx.fillStyle = "rgb(251, 0, 0)";
@@ -8,7 +6,10 @@ function writeMessageOnCanvas(ctx, message, x, y) {
         ctx.restore();
 }
 
-function drawBackground(width, height) {
+export function drawBackground(width, height) {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         ctx.save();
         ctx.lineWidth = 3;
         ctx.strokeStyle = "rgb(0, 115, 255)";
@@ -56,17 +57,13 @@ function drawLine(start, end) {
         ctx.restore();
 }
 
-function drawPlayer(player) {
+export function drawPlayer(x, y, r = 25, color = "#0000FF") {
         ctx.save();
         ctx.beginPath();
-
-        ctx.arc(player.x, player.y, player.r || 25, 0, 2 * Math.PI, true);
+        ctx.arc(x, y, r, 0, 2 * Math.PI, true);
         ctx.shadowBlur = 10;
         ctx.shadowColor = "#000000";
-
-        ctx.fillStyle = player.isColliding
-                ? "rgb(138,7,7)"
-                : player.color || "#0000FF";
+        ctx.fillStyle = color;
         ctx.fill();
         ctx.restore();
 }
@@ -92,20 +89,8 @@ export function getCanvasCtx() {
         return ctx;
 }
 
-export function draw(data, _delta) {
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        drawBackground(MAP_SIZE.width, MAP_SIZE.height);
-
-        data.forEach(drawPlayer);
-
-        writeMessageOnCanvas(ctx, fps.getFrames(), 10, 25);
-}
-
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const MAP_SIZE = { width: 1000, height: 1000 };
 
 window.addEventListener("resize", canvasResize);
 canvasResize();
