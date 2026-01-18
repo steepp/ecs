@@ -5,7 +5,10 @@ function* getMockData() {
         x = max;
         while (true) {
                 y = (y + 1) % LIMIT;
-                yield { t: Date.now(), data: [{ x, y, color: "blue" }] };
+                yield {
+                        t: Date.now(),
+                        data: [{ id: "abc123", x, y, color: "blue" }],
+                };
         }
 }
 
