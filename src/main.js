@@ -19,7 +19,6 @@ const ys = [];
 const colors = [];
 
 let lastIndex = 0;
-let _idx = null;
 
 function mainLoop(currentTime) {
         fps.countFrames(currentTime);
@@ -28,11 +27,11 @@ function mainLoop(currentTime) {
         oldTime = currentTime;
 
         drawBackground(1000, 1000);
+
         writeMessageOnCanvas(fps.getFrames(), 10, 25);
 
-        for (let i of ids) {
-                _idx = idToIdx[i];
-                drawPlayer(xs[_idx], ys[_idx], { "color": colors[_idx] });
+        for (let i in xs) {
+                drawPlayer(xs[i], ys[i], { "color": colors[i] });
         }
 
         requestId = requestAnimationFrame(mainLoop);
