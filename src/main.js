@@ -64,6 +64,17 @@ function dismember(r) {
         network.onMessage((snapshot) => {
                 updateClientServerTime(snapshot?.t);
                 gsbuffer.write(snapshot);
+
+                snapshot.data.map((r) => {
+                        const idx = idToIdx[r.id];
+                        if (idx !== undefined) {
+                                xs[idx] = r.x;
+                                ys[idx] = r.y;
+                                colors[idx] = r.color;
+                        } else {
+                                dismember(r);
+                        }
+                });
         });
 
         const nickName = "Romulus_" + new Date().toJSON();
