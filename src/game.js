@@ -10,6 +10,10 @@ export class SnapshotBuffer {
                 this.count = 0;
         }
 
+        isEmpty() {
+                return this.count === 0;
+        }
+
         read() {
                 if (this.count === 0) {
                         throw new Error("Buffer is empty");

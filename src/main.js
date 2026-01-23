@@ -22,13 +22,17 @@ let lastIndex = 0;
 
 function mainLoop(currentTime) {
         fps.countFrames(currentTime);
+        writeMessageOnCanvas(fps.getFrames(), 10, 25);
 
         delta = (currentTime - oldTime) / 1000; // time in seconds
         oldTime = currentTime;
 
         drawBackground(1000, 1000);
 
-        writeMessageOnCanvas(fps.getFrames(), 10, 25);
+        if (!gsbuffer.isEmpty()) {
+                const gs = gsbuffer.read();
+                gs.data.forEach(updateEntity);
+        }
 
         for (let i in xs) {
                 drawPlayer(xs[i], ys[i], { "color": colors[i] });
@@ -45,7 +49,18 @@ function stopAnimationFrame() {
         if (requestId) cancelAnimationFrame(requestId);
 }
 
-function dismember(r) {
+function updateEntity(r) {
+        const idx = idToIdx[r.id];
+        if (idx !== undefined) {
+                xs[idx] = r.x;
+                ys[idx] = r.y;
+                colors[idx] = r.color;
+        } else {
+                addEntity(r);
+        }
+}
+
+function addEntity(r) {
         idToIdx[r.id] = lastIndex;
         ids[lastIndex] = r.id;
         xs[lastIndex] = r.x;
@@ -64,17 +79,6 @@ function dismember(r) {
         network.onMessage((snapshot) => {
                 updateClientServerTime(snapshot?.t);
                 gsbuffer.write(snapshot);
-
-                snapshot.data.map((r) => {
-                        const idx = idToIdx[r.id];
-                        if (idx !== undefined) {
-                                xs[idx] = r.x;
-                                ys[idx] = r.y;
-                                colors[idx] = r.color;
-                        } else {
-                                dismember(r);
-                        }
-                });
         });
 
         const nickName = "Romulus_" + new Date().toJSON();
@@ -82,7 +86,7 @@ function dismember(r) {
         network.connect(nickName, (snapshot) => {
                 updateClientServerTime(snapshot?.t);
                 gsbuffer.write(snapshot);
-                snapshot.data.map(dismember);
+                snapshot.data.map(addEntity);
 
                 intervalID = setInterval(() => {
                         network.sendInput(getControls());
