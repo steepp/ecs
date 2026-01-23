@@ -3,29 +3,34 @@ import { getControls } from "./controls.js";
 import { SocketNetwork } from "./network.js";
 import { SnapshotBuffer, updateClientServerTime } from "./game.js";
 import { drawBackground, drawPlayer, writeMessageOnCanvas } from "./render.js";
-
 const gsbuffer = new SnapshotBuffer(200);
 const network = new SocketNetwork();
-
-let delta = 0;
-let oldTime = 0;
-let requestId = null;
-let intervalID = null;
 
 const idToIdx = {};
 const ids = [];
 const xs = [];
 const ys = [];
 const colors = [];
+const serverTickRate = 1000 / 30;
 
+let deltaTime = 0;
+let oldTime = 0;
+let requestId = null;
 let lastIndex = 0;
+let dtAcc = 0;
 
 function mainLoop(currentTime) {
         fps.countFrames(currentTime);
-        writeMessageOnCanvas(fps.getFrames(), 10, 25);
 
-        delta = (currentTime - oldTime) / 1000; // time in seconds
+        deltaTime = currentTime - oldTime;
         oldTime = currentTime;
+
+        // Send only changes at fixed `serverTickRate` rate
+        dtAcc += deltaTime;
+        if (dtAcc >= serverTickRate) {
+                network.sendInput(getControls());
+                dtAcc -= serverTickRate;
+        }
 
         drawBackground(1000, 1000);
 
@@ -37,6 +42,8 @@ function mainLoop(currentTime) {
         for (let i in xs) {
                 drawPlayer(xs[i], ys[i], { "color": colors[i] });
         }
+
+        writeMessageOnCanvas(fps.getFrames(), 10, 25);
 
         requestId = requestAnimationFrame(mainLoop);
 }
@@ -72,7 +79,6 @@ function addEntity(r) {
 (() => {
         network.onDisconect(() => {
                 console.log("Disconnected from server");
-                clearInterval(intervalID);
                 stopAnimationFrame();
         });
 
@@ -87,11 +93,6 @@ function addEntity(r) {
                 updateClientServerTime(snapshot?.t);
                 gsbuffer.write(snapshot);
                 snapshot.data.map(addEntity);
-
-                intervalID = setInterval(() => {
-                        network.sendInput(getControls());
-                }, 1000 / 30);
-
                 startAnimationFrame();
         });
 })();
