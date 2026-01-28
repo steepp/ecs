@@ -1,5 +1,4 @@
 const MSG_UPDATE = "update";
-const MSG_DISCON = "youdied";
 const MSG_PLAY = "start";
 const MSG_KEYS = "keys";
 
@@ -29,7 +28,7 @@ export class SocketNetwork extends Network {
         }
 
         onDisconect(cb) {
-                this.socket.on(MSG_DISCON, cb);
+                this.socket.on("disconnect", cb);
         }
 
         connect(nick, cb) {
