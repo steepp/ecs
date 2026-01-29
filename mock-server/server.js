@@ -8,7 +8,7 @@ const io = new Server();
 io.on("connection", (socket) => {
         console.log(`socket ${socket.id} connected`);
 
-        setInterval(
+        let id = setInterval(
                 () => socket.emit("update", dataGenerator.next().value),
                 1000 / 30,
         );
@@ -22,7 +22,10 @@ io.on("connection", (socket) => {
                 console.log(
                         `socket ${socket.id} disconnected due to ${reason}`,
                 );
+                clearInterval(id);
         });
+
+        // TODO: add sockekt.on("input")
 });
 
 const handler = io.handler((req) => {
