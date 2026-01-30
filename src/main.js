@@ -25,11 +25,16 @@ function mainLoop(currentTime) {
         dt = currentTime - lastTime;
         lastTime = currentTime;
 
-        // Send only changes at fixed `serverTickRate` rate
-        dtAcc += deltaTime;
-        if (dtAcc >= serverTickRate) {
+        dtAcc += dt;
+
+        if (dtAcc >= 100) { // handle tab sleep
+                dtAcc = serverTickRate;
+        }
+
+        if (dtAcc >= serverTickRate) { // send only changes at fixed `serverTickRate` rate
+
                 network.sendInput(getControls());
-                dtAcc -= serverTickRate;
+                dtAcc = 1; // dt fluctuates between 16-17
         }
 
         drawBackground(1000, 1000);
