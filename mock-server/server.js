@@ -25,7 +25,9 @@ io.on("connection", (socket) => {
                 clearInterval(id);
         });
 
-        // TODO: add sockekt.on("input")
+        socket.on("keys", (cmd) => {
+                console.log("\r" + JSON.stringify(cmd));
+        });
 });
 
 const handler = io.handler((req) => {
