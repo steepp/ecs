@@ -13,8 +13,8 @@ const ys = [];
 const colors = [];
 const serverTickRate = 1000 / 30;
 
-let deltaTime = 0;
-let oldTime = 0;
+let dt = 0;
+let lastTime = 0;
 let requestId = null;
 let lastIndex = 0;
 let dtAcc = 0;
@@ -22,8 +22,8 @@ let dtAcc = 0;
 function mainLoop(currentTime) {
         fps.countFrames(currentTime);
 
-        deltaTime = currentTime - oldTime;
-        oldTime = currentTime;
+        dt = currentTime - lastTime;
+        lastTime = currentTime;
 
         // Send only changes at fixed `serverTickRate` rate
         dtAcc += deltaTime;
