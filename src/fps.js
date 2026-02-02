@@ -1,7 +1,7 @@
 class measureFPS {
         constructor() {
                 this.lastTime;
-                this.fps;
+                this.fps = 0;
                 this.frameCount = 0;
         }
 
