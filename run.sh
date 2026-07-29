@@ -3,7 +3,7 @@
 deno run --allow-net -R mock-server/server.js &
 server_pid=$!
 
-trap "kill $server_pid 2>/dev/null; echo 'Server stopped'; exit" INT
+trap 'kill "$server_pid" 2>/dev/null; echo "Server stopped"; exit' INT
 
 sleep 2
 
