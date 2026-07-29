@@ -11,7 +11,7 @@ class Network {
                 }
         }
         onMessage() {}
-        onDisconect() {}
+        onDisconnect() {}
         connect() {}
         sendInput() {}
 }
@@ -27,7 +27,7 @@ export class SocketNetwork extends Network {
                 this.socket.on(MSG_UPDATE, cb);
         }
 
-        onDisconect(cb) {
+        onDisconnect(cb) {
                 this.socket.on("disconnect", cb);
         }
 

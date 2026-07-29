@@ -82,7 +82,7 @@ function addEntity(r) {
 }
 
 (() => {
-        network.onDisconect(() => {
+        network.onDisconnect(() => {
                 console.log("Disconnected from server");
                 stopAnimationFrame();
                 network.socket.disconnect();
