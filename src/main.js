@@ -1,7 +1,11 @@
 import { fps } from "./fps.js";
 import { getControls } from "./controls.js";
 import { SocketNetwork } from "./network.js";
-import { SnapshotBuffer, updateClientServerTime } from "./game.js";
+import {
+        getEstimatedServerTime,
+        SnapshotBuffer,
+        updateClientServerTime,
+} from "./game.js";
 import { drawBackground, drawPlayer, writeMessageOnCanvas } from "./render.js";
 const gsbuffer = new SnapshotBuffer(200);
 const network = new SocketNetwork();
@@ -39,9 +43,11 @@ function mainLoop(currentTime) {
 
         drawBackground(1000, 1000);
 
-        if (!gsbuffer.isEmpty()) {
-                const gs = gsbuffer.read();
-                gs.data.forEach(updateEntity);
+        const { data } = gsbuffer.__read();
+        const l = data.length;
+        if (data.t === getEstimatedServerTime()) {}
+        for (let i = 0; i < l; i++) {
+                upsertEntity(data[i]);
         }
 
         for (let i in xs) {
