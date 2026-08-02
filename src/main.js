@@ -61,14 +61,20 @@ function stopAnimationFrame() {
         if (requestId) cancelAnimationFrame(requestId);
 }
 
+function upsertEntity(r) {
+        if (idToIdx[r.id]) {
+                updateEntity(r)
+        } else {
+                addEntity(r);
+        }
+}
+
 function updateEntity(r) {
         const idx = idToIdx[r.id];
         if (idx !== undefined) {
                 xs[idx] = r.x;
                 ys[idx] = r.y;
                 colors[idx] = r.color;
-        } else {
-                addEntity(r);
         }
 }
 
