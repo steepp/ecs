@@ -5,23 +5,20 @@ import {
         getEstimatedServerTime,
         SnapshotBuffer,
         updateClientServerTime,
+        upsertEntity,
+        addEntity,
+    xs, ys, colors
 } from "./game.js";
 import { drawBackground, drawPlayer, writeMessageOnCanvas } from "./render.js";
 
 const gsbuffer = new SnapshotBuffer(10);
 const network = new SocketNetwork();
 
-const idToIdx = {};
-const ids = [];
-const xs = [];
-const ys = [];
-const colors = [];
-const serverTickRate = 1000 / 30;
+const DEBUG = true;
+const serverTickRate = 1000 / 30;       // ~ 30fps
 
 let dt = 0;
 let lastTime = 0;
-let requestId = null;
-let lastIndex = 0;
 let dtAcc = 0;
 let m = performance.now();
 let counter = 0;        // frames counter
@@ -78,32 +75,6 @@ function startAnimationFrame() {
 
 function stopAnimationFrame() {
         if (requestId) cancelAnimationFrame(requestId);
-}
-
-function upsertEntity(r) {
-        if (idToIdx[r.id]) {
-                updateEntity(r)
-        } else {
-                addEntity(r);
-        }
-}
-
-function updateEntity(r) {
-        const idx = idToIdx[r.id];
-        if (idx !== undefined) {
-                xs[idx] = r.x;
-                ys[idx] = r.y;
-                colors[idx] = r.color;
-        }
-}
-
-function addEntity(r) {
-        idToIdx[r.id] = lastIndex;
-        ids[lastIndex] = r.id;
-        xs[lastIndex] = r.x;
-        ys[lastIndex] = r.y;
-        colors[lastIndex] = r.color;
-        lastIndex++;
 }
 
 (() => {

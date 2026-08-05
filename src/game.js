@@ -45,3 +45,39 @@ export function updateClientServerTime(t) {
 export function getEstimatedServerTime() {
         return serverTime + (Date.now() - clientTime);
 }
+
+const idToIdx = {};
+const ids = [];
+export const xs = [];
+export const ys = [];
+export const colors = [];
+let lastIndex = 0;
+
+export function upsertEntity(r) {
+        if (idToIdx[r.id]) {
+                updateEntity(r)
+        } else {
+                addEntity(r);
+        }
+}
+
+function updateEntity(r) {
+        const idx = idToIdx[r.id];
+        if (idx !== undefined) {
+                xs[idx] = r.x;
+                ys[idx] = r.y;
+                colors[idx] = r.color;
+        }
+}
+
+export function addEntity(r) {
+        /**
+         * Note: If the entity exists, this will overwrite its data!
+         */
+        idToIdx[r.id] = lastIndex;
+        ids[lastIndex] = r.id;
+        xs[lastIndex] = r.x;
+        ys[lastIndex] = r.y;
+        colors[lastIndex] = r.color;
+        lastIndex++;
+}
