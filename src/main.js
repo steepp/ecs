@@ -7,7 +7,8 @@ import {
         updateClientServerTime,
 } from "./game.js";
 import { drawBackground, drawPlayer, writeMessageOnCanvas } from "./render.js";
-const gsbuffer = new SnapshotBuffer(200);
+
+const gsbuffer = new SnapshotBuffer(10);
 const network = new SocketNetwork();
 
 const idToIdx = {};
@@ -22,20 +23,32 @@ let lastTime = 0;
 let requestId = null;
 let lastIndex = 0;
 let dtAcc = 0;
+let m = performance.now();
+let counter = 0;        // frames counter
+let m = performance.now();
+let requestId = null;
 
 function mainLoop(currentTime) {
         fps.countFrames(currentTime);
 
-        dt = currentTime - lastTime;
+        dt = currentTime - lastTime;    // milliseconds passed between the frames
         lastTime = currentTime;
 
         dtAcc += dt;
 
-        if (dtAcc >= 100) { // handle tab sleep
+        if (dtAcc >= 100) {             // handle tab sleep when the time dt between frames is big
                 dtAcc = serverTickRate;
         }
 
-        if (dtAcc >= serverTickRate) { // send only changes at fixed `serverTickRate` rate
+        if (dtAcc >= serverTickRate) { // send changes at fixed serverTickRate
+
+                // diagnostics. the rate at which keys are being sent.
+                if (DEBUG && currentTime >= m + 1000) {
+                        console.log(counter);   // The rate.
+                        counter = 0;
+                        m = currentTime;
+                }
+                counter += 1;
 
                 network.sendInput(getControls());
                 dtAcc = 1; // dt fluctuates between 16-17
