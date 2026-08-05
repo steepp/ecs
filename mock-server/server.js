@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
         });
 
         socket.on("keys", (cmd) => {
-                console.log("\r" + JSON.stringify(cmd));
+                console.log(`[server][${JSON.stringify(new Date())}]:${JSON.stringify(cmd)}`);
         });
 });
 
